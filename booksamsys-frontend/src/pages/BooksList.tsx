@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Book } from "../models/Book";
 import { getBooks, getBook, searchBook, deleteBook } from "../services/BookService";
-import { GridColDef, DataGrid, GridRowSelectionModel } from "@mui/x-data-grid";
+import { GridColDef, DataGrid, GridRowSelectionModel, GridPaginationModel } from "@mui/x-data-grid";
 import { Box, Button, Stack, Typography, TextField } from "@mui/material";
 import BookModal from "../components/BookModal";
 
@@ -11,6 +11,7 @@ function BooksList() {
     const [openModal, setOpenModal] = useState(false);
     const [editBook, setEditBook] = useState<Book | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ pageSize: 7, page: 0 });
 
     useEffect(() => {
         fetchBooks();
@@ -119,7 +120,9 @@ function BooksList() {
                 columns={columns}
                 getRowId={(row) => row.isbn}
                 pagination
-                pageSizeOptions={[5]}
+                pageSizeOptions={[5, 10, 20]}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
                 checkboxSelection
                 onRowSelectionModelChange={(newSelection: GridRowSelectionModel) => setSelectedBooks(newSelection)}
                 disableRowSelectionOnClick

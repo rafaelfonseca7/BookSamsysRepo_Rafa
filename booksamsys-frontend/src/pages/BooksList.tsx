@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { Book } from "../models/Book";
-import { getBooks, deleteBook } from "../services/BookService";
-import { GridColDef, DataGrid, GridRowSelectionModel } from '@mui/x-data-grid';
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { getBooks, getBook, searchBook, deleteBook } from "../services/BookService";
+import { GridColDef, DataGrid, GridRowSelectionModel } from "@mui/x-data-grid";
+import { Box, Button, Stack, Typography, TextField } from "@mui/material";
 import BookModal from "../components/BookModal";
 
 function BooksList() {
-
     const [books, setBooks] = useState<Book[]>([]);
     const [selectedBooks, setSelectedBooks] = useState<GridRowSelectionModel>([]);
     const [openModal, setOpenModal] = useState(false);
     const [editBook, setEditBook] = useState<Book | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         fetchBooks();
@@ -40,25 +40,51 @@ function BooksList() {
         fetchBooks();
     };
 
+    const isValidIsbn = (isbn: string) => {
+        const isbnRegex = /^(97(8|9))?\d{9}(\d|X)$/;
+        return isbnRegex.test(isbn);
+    };
+
+    const handleSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const query = event.target.value;
+        setSearchTerm(query);
+
+        if (query === "") {
+            fetchBooks();
+            return;
+        }
+
+        try {
+            if (isValidIsbn(query)) {
+                // Busca por ISBN
+                const book = await getBook(query);
+                setBooks(book ? [book] : []);
+            } else {
+                // Busca por título
+                const filteredBooks = await searchBook(query);
+                setBooks(filteredBooks);
+            }
+        } catch (error) {
+            console.error("Erro na busca:", error);
+            setBooks([]);
+        }
+    };
+
     const columns: GridColDef[] = [
-        { field: 'isbn', headerName: 'ISBN', width: 150 },
-        { field: 'title', headerName: 'Title', width: 250 },
-        { field: 'authorName', headerName: 'Author', width: 200 },
-        { field: 'price', headerName: 'Price (€)', width: 150 },
+        { field: "isbn", headerName: "ISBN", width: 150 },
+        { field: "title", headerName: "Title", width: 250 },
+        { field: "authorName", headerName: "Author", width: 200 },
+        { field: "price", headerName: "Price (€)", width: 150 },
     ];
 
     return (
-        <Box sx={{ height: 400, width: '100%' }}>
-            <Typography variant="h4" sx={{ marginBottom: 2, textAlign: 'center' }}>
+        <Box sx={{ height: 500, width: "100%" }}>
+            <Typography variant="h4" sx={{ marginBottom: 2, textAlign: "center" }}>
                 Books Samsys List
             </Typography>
 
             <Stack direction="row" spacing={2} sx={{ marginBottom: 2 }}>
-                <Button 
-                    variant="contained" 
-                    color="primary"
-                    onClick={() => handleOpenModal()}
-                >
+                <Button variant="contained" color="primary" onClick={() => handleOpenModal()}>
                     Add Book
                 </Button>
                 <Button
@@ -79,6 +105,15 @@ function BooksList() {
                 </Button>
             </Stack>
 
+            <TextField
+                label="Search by ISBN or Title"
+                variant="outlined"
+                value={searchTerm}
+                onChange={handleSearch}
+                fullWidth
+                sx={{ marginBottom: 2 }}
+            />
+
             <DataGrid
                 rows={books}
                 columns={columns}
@@ -98,10 +133,8 @@ function BooksList() {
                     editBook={editBook}
                 />
             )}
-            
         </Box>
     );
-
 }
 
 export default BooksList;

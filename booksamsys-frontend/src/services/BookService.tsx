@@ -12,6 +12,11 @@ export const getBook = async (isbn: string): Promise<Book> => {
     return response.data;
 }
 
+export const searchBook = async (title: string): Promise<Book[]> => {
+    const response = await api.get(`/Book/search/${title}`);
+    return response.data;
+}
+
 export const createBook = async (book: CreateEditBook): Promise<void> => {
     await api.post("/Book", book);
 }

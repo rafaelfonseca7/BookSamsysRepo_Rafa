@@ -38,8 +38,10 @@ const BookModal: React.FC<BookModalProps> = ({ open, onClose, onSave, editBook }
             setAuthors(data);
         };
         fetchAuthors();
+    }, []);
 
-        if(editBook && authors.length > 0) {
+    useEffect(() => {
+        if (editBook && authors.length > 0) {
             const author = authors.find((author) => author.name === editBook.authorName);
             if (author) {
                 setAuthorId(author.id);

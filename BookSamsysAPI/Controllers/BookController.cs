@@ -29,6 +29,14 @@ namespace BookSamsysAPI.Controllers
             return Ok(book);
         }
 
+        [HttpGet("search/{title}")]
+        public async Task<ActionResult<IEnumerable<BookDTO>>> GetByTitle(string title)
+        {
+            var book = await _service.GetBookByTitleAsync(title);
+            if (book == null) return NotFound();
+            return Ok(book);
+        }
+
         [HttpPost]
         public async Task<ActionResult> Create(CreateBookDTO createBookDTO)
         {

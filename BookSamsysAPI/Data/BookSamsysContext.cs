@@ -26,6 +26,12 @@ namespace BookSamsysAPI.Data
             modelBuilder.Entity<Book>()
                 .HasIndex(b => b.Isbn)
                 .IsUnique();
+
+            modelBuilder.Entity<Book>()
+                .Property(b => b.Isbn)
+                .IsRequired()
+                .HasMaxLength(13)
+                .IsUnicode(false);
         }
     }
 }

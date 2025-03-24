@@ -1,6 +1,7 @@
 ﻿using BookSamsysAPI.Repositories;
 using BookSamsysAPI.Models;
-using BookSamsysAPI.DTOs;   
+using BookSamsysAPI.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookSamsysAPI.Services
 {
@@ -34,22 +35,47 @@ namespace BookSamsysAPI.Services
             return new BookDTO { Isbn = book.Isbn, Title = book.Title, AuthorName = book.Author.Name, Price = book.Price };
         }
 
-        public async Task<CreateBookDTO> AddBookAsync(CreateBookDTO createBookDTO)
-        {
+        public async Task<CreateBookDTO> AddBookAsync(CreateBookDTO createBookDTO){
             var author = await _authorRepository.GetByIdAsync(createBookDTO.AuthorId);
-            if (author == null) return null;
+            if (author == null) 
+                throw new KeyNotFoundException("Author not found.");
 
-            var book = new Book { Isbn = createBookDTO.Isbn, Title = createBookDTO.Title, AuthorId = createBookDTO.AuthorId, Price = createBookDTO.Price };
-            
-            await _bookRepository.AddAsync(book);
-            
-            return new CreateBookDTO { Isbn = book.Isbn, Title = book.Title, AuthorId = book.AuthorId, Price = book.Price };
+            var book = new Book 
+            { 
+                Isbn = createBookDTO.Isbn, 
+                Title = createBookDTO.Title, 
+                AuthorId = createBookDTO.AuthorId, 
+                Price = createBookDTO.Price 
+            };
+
+            try
+            {
+                await _bookRepository.AddAsync(book);
+            }
+            catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("duplicate key") == true)
+            {
+                throw new InvalidOperationException("ISBN already exists.", ex);
+            }
+
+            return new CreateBookDTO 
+            { 
+                Isbn = book.Isbn, 
+                Title = book.Title, 
+                AuthorId = book.AuthorId, 
+                Price = book.Price 
+            };
         }
+
 
         public async Task UpdateBookAsync(CreateBookDTO updateBookDTO)
         {
             var book = await _bookRepository.GetByIsbnAsync(updateBookDTO.Isbn);
-            if (book == null) return;
+            if (book == null)
+                throw new KeyNotFoundException("Book not found.");
+
+            var author = await _authorRepository.GetByIdAsync(updateBookDTO.AuthorId);
+            if (author == null)
+                throw new KeyNotFoundException("Author not found.");
 
             book.Title = updateBookDTO.Title;
             book.AuthorId = updateBookDTO.AuthorId;

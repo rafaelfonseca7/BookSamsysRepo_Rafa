@@ -34,17 +34,28 @@ namespace BookSamsysAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(ModelState); // 400 - Dados inválidos
             }
 
-            var createdBook = await _service.AddBookAsync(createBookDTO);
-            if (createdBook == null)
+            try
             {
-                return NotFound("Author not found.");
+                var createdBook = await _service.AddBookAsync(createBookDTO);
+                return CreatedAtAction(nameof(GetByIsbn), new { isbn = createdBook.Isbn }, createdBook);
             }
-
-            return CreatedAtAction(nameof(GetByIsbn), new { isbn = createdBook.Isbn }, createdBook);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message); // 404 - Autor não encontrado
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("ISBN already exists"))
+            {
+                return Conflict(ex.Message); // 409 - ISBN duplicado
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An unexpected error occurred."); // Erros inesperados
+            }
         }
+
 
 
         [HttpPut("{isbn}")]
@@ -66,8 +77,24 @@ namespace BookSamsysAPI.Controllers
                 return NotFound("Book not found.");
             }
 
-            await _service.UpdateBookAsync(updateBookDTO);
-            return NoContent();
+            try
+            {
+                await _service.UpdateBookAsync(updateBookDTO);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message); // 404 - Autor não encontrado
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message); // 400 - Título inválido (validação manual)
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An unexpected error occurred."); // Erros inesperados
+            }
+
         }
 
 

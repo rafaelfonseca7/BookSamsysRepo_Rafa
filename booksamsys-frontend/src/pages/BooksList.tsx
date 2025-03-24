@@ -84,28 +84,6 @@ function BooksList() {
                 Books Samsys List
             </Typography>
 
-            <Stack direction="row" spacing={2} sx={{ marginBottom: 2 }}>
-                <Button variant="contained" color="primary" onClick={() => handleOpenModal()}>
-                    Add Book
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleOpenModal(books.find(book => selectedBooks.includes(book.isbn)))}
-                    disabled={selectedBooks.length !== 1}
-                >
-                    Edit Book
-                </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleDeleteBook}
-                    disabled={selectedBooks.length === 0}
-                >
-                    Delete Books
-                </Button>
-            </Stack>
-
             <TextField
                 label="Search by ISBN or Title"
                 variant="outlined"
@@ -127,6 +105,28 @@ function BooksList() {
                 onRowSelectionModelChange={(newSelection: GridRowSelectionModel) => setSelectedBooks(newSelection)}
                 disableRowSelectionOnClick
             />
+            
+            <Stack direction="row" spacing={2} sx={{ marginTop: 2 }}>
+                <Button variant="contained" color="primary" onClick={() => handleOpenModal()}>
+                    Add Book
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleOpenModal(books.find(book => selectedBooks.includes(book.isbn)))}
+                    disabled={selectedBooks.length !== 1}
+                >
+                    Edit Book
+                </Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleDeleteBook}
+                    disabled={selectedBooks.length === 0}
+                >
+                    Delete Books
+                </Button>
+            </Stack>
 
             {openModal && (
                 <BookModal

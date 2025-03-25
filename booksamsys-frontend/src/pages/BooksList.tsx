@@ -4,6 +4,7 @@ import { getBooks, getBook, searchBook, deleteBook } from "../services/BookServi
 import { GridColDef, DataGrid, GridRowSelectionModel, GridPaginationModel } from "@mui/x-data-grid";
 import { Box, Button, Stack, Typography, TextField } from "@mui/material";
 import BookModal from "../components/BookModal";
+import { useNavigate } from "react-router-dom";
 
 function BooksList() {
     const [books, setBooks] = useState<Book[]>([]);
@@ -12,6 +13,7 @@ function BooksList() {
     const [editBook, setEditBook] = useState<Book | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ pageSize: 7, page: 0 });
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchBooks();
@@ -71,15 +73,31 @@ function BooksList() {
         }
     };
 
+    const handleAuthorClick = (authorId: number) => {
+        navigate(`/author/${authorId}`);
+    };
+
     const columns: GridColDef[] = [
         { field: "isbn", headerName: "ISBN", width: 150 },
         { field: "title", headerName: "Title", width: 250 },
-        { field: "authorName", headerName: "Author", width: 200 },
+        { 
+            field: "authorName", 
+            headerName: "Author", 
+            width: 200,
+            renderCell: (params) => (
+                <span
+                    style={{ color: 'inherit', cursor: 'pointer' }}
+                    onClick={() => handleAuthorClick(params.row.authorId)}
+                >
+                    {params.row.authorName}
+                </span>
+            )
+        },
         { field: "price", headerName: "Price (€)", width: 150 },
     ];
 
     return (
-        <Box sx={{ height: 500, width: "100%" }}>
+        <Box sx={{ height: 500, padding: 4 }}>
             <Typography variant="h4" sx={{ marginBottom: 2, textAlign: "center" }}>
                 Books Samsys List
             </Typography>

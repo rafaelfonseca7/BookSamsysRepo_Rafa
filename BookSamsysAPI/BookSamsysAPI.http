@@ -1,6 +1,59 @@
 @BookSamsysAPI_HostAddress = http://localhost:5091
 
-GET {{BookSamsysAPI_HostAddress}}/weatherforecast/
+### Get all books
+GET {{BookSamsysAPI_HostAddress}}/api/book
 Accept: application/json
 
-###
+### Get book by ISBN
+GET {{BookSamsysAPI_HostAddress}}/api/book/isbn?isbn=1234567890
+Accept: application/json
+
+### Get books by title
+GET {{BookSamsysAPI_HostAddress}}/api/book/title?title=Example
+Accept: application/json
+
+### Create a new book
+POST {{BookSamsysAPI_HostAddress}}/api/book
+Content-Type: application/json
+
+{
+  "isbn": "1234567890",
+  "title": "Example Book",
+  "authorId": 5,
+  "price": 19.99
+}
+
+### Update a book
+PUT {{BookSamsysAPI_HostAddress}}/api/book/isbn?isbn=1234567890
+Content-Type: application/json
+
+{
+  "isbn": "1234567890",
+  "title": "Updated Book",
+  "authorId": 5,
+  "price": 29.99
+}
+
+### Delete a book
+DELETE {{BookSamsysAPI_HostAddress}}/api/book/isbn?isbn=1234567890
+
+### Get all authors
+GET {{BookSamsysAPI_HostAddress}}/api/author
+Accept: application/json
+
+### Get author by ID
+GET {{BookSamsysAPI_HostAddress}}/api/author/id?id=5
+Accept: application/json
+
+### Get books from author
+GET {{BookSamsysAPI_HostAddress}}/api/author/books?id=5
+Accept: application/json
+
+### Create a new author
+POST {{BookSamsysAPI_HostAddress}}/api/author
+Content-Type: application/json
+
+{
+  "name": "Example Author"
+}
+

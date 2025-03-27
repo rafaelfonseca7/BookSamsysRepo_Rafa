@@ -20,17 +20,19 @@ namespace BookSamsysAPI.Controllers
         {
             return Ok(await _service.GetAllBooksAsync());
         }
+        // substiruir actionreuslt por messaging helper
 
-        [HttpGet("{isbn}")]
-        public async Task<ActionResult<BookDTO>> GetByIsbn(string isbn)
+        [HttpGet("isbn")]
+        public async Task<ActionResult<BookDTO>> GetByIsbn([FromQuery] string isbn)
         {
             var book = await _service.GetBookByIsbnAsync(isbn);
             if (book == null) return NotFound();
             return Ok(book);
         }
 
-        [HttpGet("search/{title}")]
-        public async Task<ActionResult<IEnumerable<BookDTO>>> GetByTitle(string title)
+        // / --» url query parameter
+        [HttpGet("title")]
+        public async Task<ActionResult<IEnumerable<BookDTO>>> GetByTitle([FromQuery] string title)
         {
             var book = await _service.GetBookByTitleAsync(title);
             if (book == null) return NotFound();
@@ -60,14 +62,14 @@ namespace BookSamsysAPI.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An unexpected error occurred."); // Erros inesperados
+                return StatusCode(500, "An unexpected error occurred.");
             }
         }
 
 
 
-        [HttpPut("{isbn}")]
-        public async Task<ActionResult> Update(string isbn, CreateBookDTO updateBookDTO)
+        [HttpPut("isbn")]
+        public async Task<ActionResult> Update([FromQuery] string isbn, [FromBody] CreateBookDTO updateBookDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -100,17 +102,21 @@ namespace BookSamsysAPI.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An unexpected error occurred."); // Erros inesperados
+                return StatusCode(500, "An unexpected error occurred.");
             }
 
         }
 
 
-        [HttpDelete("{isbn}")]
-        public async Task<ActionResult> Delete(string isbn)
+        [HttpDelete("isbn")]
+        public async Task<ActionResult> Delete([FromQuery] string isbn)
         {
             await _service.DeleteBookAsync(isbn);
             return NoContent();
         }
+        // livros de um autor, fe deve levar para uma nova pagina, com tabela dos livros do autor (esq ter info utor, e direita lita de livros
+        // //dentro de cada row da tabela, ter um icone, q ao onclick, ir para detalhe do livro, nova rota, nova livro do detalhe do livro, pode ter um novo botao
+        // // navegar detlhes autor, ou seja, full navegação)
+        // criar  / ver o que sao .http files
     }
 }

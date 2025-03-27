@@ -1,8 +1,6 @@
 ﻿using BookSamsysAPI.DTOs;
 using BookSamsysAPI.Models;
 using BookSamsysAPI.Repositories;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace BookSamsysAPI.Services
 {
@@ -34,6 +32,18 @@ namespace BookSamsysAPI.Services
             if (author == null) return null;
 
             return new AuthorDTO { Id = author.Id, Name = author.Name };
+        }
+
+        public async Task<IEnumerable<BookDTO>> GetBooksFromAuthorAsync(int id)
+        {
+            var books = await _repository.GetBooksFromAuthor(id);
+            var bookDTOs = new List<BookDTO>();
+
+            foreach (var book in books)
+            {
+                bookDTOs.Add(new BookDTO { Isbn = book.Isbn, Title = book.Title, AuthorId = book.Author.Id, AuthorName = book.Author.Name, Price = book.Price });
+            }
+            return bookDTOs;
         }
 
         public async Task<AuthorDTO> AddAuthorAsync(AuthorDTO authorDTO)

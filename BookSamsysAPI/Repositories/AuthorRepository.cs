@@ -26,6 +26,14 @@ namespace BookSamsysAPI.Repositories
             return await _context.Authors.FindAsync(id);
         }
 
+        public async Task<IEnumerable<Book>> GetBooksFromAuthor(int id)
+        {
+            return await _context.Books
+                .Where(b => b.AuthorId == id && !b.IsDeleted)
+                .Include(b => b.Author)
+                .ToListAsync();
+        }
+
         public async Task AddAsync(Author author)
         {
             _context.Authors.Add(author);

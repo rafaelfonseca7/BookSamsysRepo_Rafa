@@ -8,11 +8,11 @@ export const getAuthors = async (): Promise<Author[]> => {
 }
 
 export const getAuthor = async (id: number): Promise<Author> => {
-    const response = await api.get(`/Author/${id}`);
+    const response = await api.get(`/Author/id`, { params: { id } });
     return response.data;
 }
 
 export const getBooksFromAuthor = async (id: number): Promise<Book[]> => {
-    const response = await api.get(`/Author/${id}/books`);
+    const response = await api.get(`/Author/books`, { params: { id } });
     return response.data;
 }

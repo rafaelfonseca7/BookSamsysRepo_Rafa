@@ -22,7 +22,7 @@ namespace BookSamsysAPI.Services
             var bookDTOs = new List<BookDTO>();
             foreach (var book in books)
             {
-                bookDTOs.Add(new BookDTO { Isbn = book.Isbn, Title = book.Title, AuthorName = book.Author.Name, Price = book.Price });
+                bookDTOs.Add(new BookDTO { Isbn = book.Isbn, Title = book.Title, AuthorId = book.Author.Id, AuthorName = book.Author.Name, Price = book.Price });
             }
             return bookDTOs;
         }
@@ -32,7 +32,7 @@ namespace BookSamsysAPI.Services
             var book = await _bookRepository.GetByIsbnAsync(isbn);
             if (book == null) return null;
 
-            return new BookDTO { Isbn = book.Isbn, Title = book.Title, AuthorName = book.Author.Name, Price = book.Price };
+            return new BookDTO { Isbn = book.Isbn, Title = book.Title, AuthorId = book.Author.Id, AuthorName = book.Author.Name, Price = book.Price };
         }
 
         public async Task<IEnumerable<BookDTO>> GetBookByTitleAsync(string title)
@@ -41,7 +41,7 @@ namespace BookSamsysAPI.Services
             var bookDTOs = new List<BookDTO>();
             foreach (var book in books)
             {
-                bookDTOs.Add(new BookDTO { Isbn = book.Isbn, Title = book.Title, AuthorName = book.Author.Name, Price = book.Price });
+                bookDTOs.Add(new BookDTO { Isbn = book.Isbn, Title = book.Title, AuthorId = book.Author.Id, AuthorName = book.Author.Name, Price = book.Price });
             }
 
             return bookDTOs;

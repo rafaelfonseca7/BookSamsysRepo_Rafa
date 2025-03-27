@@ -23,12 +23,20 @@ namespace BookSamsysAPI.Controllers
             return Ok(await _service.GetAllAuthorsAsync());
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AuthorDTO>> GetById(int id)
+        [HttpGet("id")]
+        public async Task<ActionResult<AuthorDTO>> GetById([FromQuery] int id)
         {
             var author = await _service.GetAuthorByIdAsync(id);
             if (author == null) return NotFound();
             return Ok(author);
+        }
+
+        [HttpGet("books")]
+        public async Task<ActionResult<IEnumerable<BookDTO>>> GetBooksFromAuthor([FromQuery] int id)
+        {
+            var books = await _service.GetBooksFromAuthorAsync(id);
+            if (books == null) return NotFound();
+            return Ok(books);
         }
 
         [HttpPost]
